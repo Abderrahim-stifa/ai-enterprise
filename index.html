@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI ENTERPRISE | مركز القيادة</title>
+<style>
+:root {
+  --bg:#0b1020;--panel:#141c30;--panel2:#19243b;
+  --text:#edf2ff;--muted:#9aa9c5;--accent:#6c8cff;
+  --border:#26334e;--green:#35c99a;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+font-family:Arial,Tahoma,sans-serif}
+header{padding:22px 5%;background:#111a2d;border-bottom:1px solid var(--border);
+display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+.logo{font-size:23px;font-weight:bold;letter-spacing:1px}
+.logo span{color:var(--accent)}
+.status{color:var(--green);font-size:13px}
+.layout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 75px)}
+aside{background:#10182a;padding:22px 14px;border-left:1px solid var(--border)}
+nav button{width:100%;text-align:right;padding:13px;margin:4px 0;
+background:transparent;border:0;color:var(--muted);border-radius:8px;
+cursor:pointer;font-size:14px}
+nav button:hover,nav button.active{background:#243454;color:white}
+main{padding:28px;max-width:1400px;width:100%;margin:auto}
+h1{font-size:25px;margin:0 0 8px}
+.sub{color:var(--muted);margin-bottom:25px;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px}
+.card{background:var(--panel);border:1px solid var(--border);
+border-radius:12px;padding:19px}
+.card small{color:var(--muted)}
+.number{font-size:27px;font-weight:bold;margin-top:12px}
+.section{display:none}
+.section.active{display:block}
+.panel{background:var(--panel);border:1px solid var(--border);
+border-radius:12px;padding:22px;margin-top:20px}
+.panel h2{font-size:18px;margin-top:0}
+.departments{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.dept{background:var(--panel2);padding:17px;border-radius:10px;border:1px solid var(--border)}
+.dept b{display:block;margin-bottom:8px}
+.dept small{color:var(--muted)}
+input,textarea{width:100%;padding:14px;background:#0d1527;color:white;
+border:1px solid var(--border);border-radius:8px;font:inherit;margin:8px 0}
+textarea{min-height:115px;resize:vertical}
+button.primary{background:var(--accent);color:white;border:0;padding:12px 20px;
+border-radius:8px;cursor:pointer;font-weight:bold}
+button:disabled{opacity:.5;cursor:wait}
+#answer{white-space:pre-wrap;line-height:1.9;min-height:50px}
+.badge{color:var(--green);font-size:12px}
+footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
+@media(max-width:750px){
+.layout{grid-template-columns:1fr}
+aside{border-left:0;border-bottom:1px solid var(--border);padding:10px}
+nav{display:flex;overflow-x:auto}
+nav button{min-width:max-content;text-align:center}
+main{padding:18px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">AI <span>ENTERPRISE</span></div>
+  <div class="status">● مركز القيادة جاهز</div>
+</header>
+
+<div class="layout">
+<aside>
+<nav>
+<button class="active" data-page="dashboard">لوحة القيادة</button>
+<button data-page="ceo">مكتب CEO الذكي</button>
+<button data-page="departments">الأقسام والإدارة</button>
+<button data-page="projects">المشاريع</button>
+<button data-page="tasks">المهام</button>
+<button data-page="reports">التقارير</button>
+</nav>
+</aside>
+
+<main>
+<section id="dashboard" class="section active">
+<h1>لوحة القيادة الرئيسية</h1>
+<p class="sub">نظرة عامة على أداء ومكونات AI ENTERPRISE</p>
+<div class="grid">
+<div class="card"><small>الأقسام الإدارية</small><div class="number">8</div></div>
+<div class="card"><small>المشاريع</small><div class="number" id="projectCount">0</div></div>
+<div class="card"><small>المهام المسجلة</small><div class="number" id="taskCount">0</div></div>
+<div class="card"><small>حالة المنصة</small><div class="number" style="color:var(--green)">نشطة</div></div>
+</div>
+<div class="panel">
+<h2>الرؤية المؤسسية</h2>
+<p>بناء مؤسسة تعتمد على الذكاء الاصطناعي في التخطيط والتحليل والبحث والتطوير وإدارة العمليات، مع إشراف مركزي من المدير التنفيذي.</p>
+</div>
+<div class="panel">
+<h2>مركز النشاط</h2>
+<p class="sub">يمكنك إدارة الأقسام والمهام والمشاريع والتواصل مع المدير التنفيذي الذكي.</p>
+</div>
+</section>
+
+<section id="ceo" class="section">
+<h1>مكتب المدير التنفيذي CEO</h1>
+<p class="sub">أرسل توجيهاتك إلى المدير التنفيذي للحصول على تحليل وتوصيات من الذكاء الاصطناعي.</p>
+<div class="panel">
+<h2>التوجيه التنفيذي</h2>
+<textarea id="ceoTask" placeholder="اكتب الهدف أو المهمة التي تريد من المدير التنفيذي تحليلها..."></textarea>
+<textarea id="ceoContext" placeholder="معلومات إضافية أو سياق المهمة (اختياري)"></textarea>
+<button class="primary" id="runCEO" onclick="runCEO()">إرسال إلى المدير التنفيذي</button>
+<p id="ceoStatus" class="badge"></p>
+</div>
+<div class="panel">
+<h2>تقرير المدير التنفيذي</h2>
+<div id="answer">ستظهر هنا نتيجة التحليل بعد إرسال المهمة.</div>
+</div>
+</section>
+
+<section id="departments" class="section">
+<h1>الإدارة والأقسام</h1>
+<p class="sub">الهيكل التنظيمي للمؤسسة</p>
+<div class="departments">
+<div class="dept"><b>CEO — المدير التنفيذي</b><small>القيادة والاستراتيجية والقرارات العليا</small></div>
+<div class="dept"><b>COO — مدير العمليات</b><small>التشغيل وإدارة العمليات اليومية</small></div>
+<div class="dept"><b>CFO — المدير المالي</b><small>الميزانيات والتكاليف والتخطيط المالي</small></div>
+<div class="dept"><b>CTO — المدير التقني</b><small>البنية التقنية والهندسة والأنظمة</small></div>
+<div class="dept"><b>CMO — مدير التسويق</b><small>التسويق والعلامة التجارية والنمو</small></div>
+<div class="dept"><b>CPO — مدير المنتجات</b><small>تطوير المنتجات وتجربة المستخدم</small></div>
+<div class="dept"><b>CRO — مدير الإيرادات</b><small>المبيعات والعملاء وتنمية الإيرادات</small></div>
+<div class="dept"><b>R&D — البحث والتطوير</b><small>الابتكار والتجارب والبحث العلمي</small></div>
+</div>
+</section>
+
+<section id="projects" class="section">
+<h1>إدارة المشاريع</h1>
+<p class="sub">تسجيل المشاريع ومتابعتها</p>
+<div class="panel">
+<input id="projectName" placeholder="اسم المشروع">
+<textarea id="projectDesc" placeholder="وصف المشروع وأهدافه"></textarea>
+<button class="primary" onclick="addProject()">إضافة مشروع</button>
+</div>
+<div class="panel"><h2>قائمة المشاريع</h2><div id="projectList">لا توجد مشاريع مسجلة.</div></div>
+</section>
+
+<section id="tasks" class="section">
+<h1>إدارة المهام</h1>
+<p class="sub">توزيع وتسجيل ومتابعة المهام</p>
+<div class="panel">
+<input id="taskName" placeholder="عنوان المهمة">
+<input id="taskOwner" placeholder="القسم المسؤول">
+<button class="primary" onclick="addTask()">إضافة مهمة</button>
+</div>
+<div class="panel"><h2>قائمة المهام</h2><div id="taskList">لا توجد مهام مسجلة.</div></div>
+</section>
+
+<section id="reports" class="section">
+<h1>التقارير</h1>
+<p class="sub">ملخص البيانات المسجلة داخل المنصة</p>
+<div class="panel" id="reportContent"></div>
+</section>
+</main>
+</div>
+
+<footer>AI ENTERPRISE © 2026 — منصة الإدارة الذكية</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+document.querySelectorAll("nav button").forEach(button=>{
+  button.addEventListener("click",()=>{
+    document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+    button.classList.add("active");
+    $(button.dataset.page).classList.add("active");
+    if(button.dataset.page==="reports") renderReports();
+  });
+});
+
+let projects=JSON.parse(localStorage.getItem("aie_projects")||"[]");
+let tasks=JSON.parse(localStorage.getItem("aie_tasks")||"[]");
+
+function save(){
+  localStorage.setItem("aie_projects",JSON.stringify(projects));
+  localStorage.setItem("aie_tasks",JSON.stringify(tasks));
+  render();
+}
+function render(){
+  $("projectCount").textContent=projects.length;
+  $("taskCount").textContent=tasks.length;
+  $("projectList").innerHTML=projects.length?projects.map(p=>
+    `<div class="dept"><b>${escapeHTML(p.name)}</b><small>${escapeHTML(p.desc)}</small></div>`
+  ).join(""):"لا توجد مشاريع مسجلة.";
+  $("taskList").innerHTML=tasks.length?tasks.map(t=>
+    `<div class="dept"><b>${escapeHTML(t.name)}</b><small>القسم: ${escapeHTML(t.owner||"غير محدد")}</small></div>`
+  ).join(""):"لا توجد مهام مسجلة.";
+}
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+function addProject(){
+  const name=$("projectName").value.trim();
+  if(!name)return alert("أدخل اسم المشروع.");
+  projects.push({name,desc:$("projectDesc").value.trim()});
+  $("projectName").value="";$("projectDesc").value="";
+  save();
+}
+function addTask(){
+  const name=$("taskName").value.trim();
+  if(!name)return alert("أدخل عنوان المهمة.");
+  tasks.push({name,owner:$("taskOwner").value.trim()});
+  $("taskName").value="";$("taskOwner").value="";
+  save();
+}
+async function runCEO(){
+  const task=$("ceoTask").value.trim();
+  const context=$("ceoContext").value.trim();
+  if(!task)return alert("اكتب المهمة أولاً.");
+  const button=$("runCEO");
+  button.disabled=true;
+  $("ceoStatus").textContent="جاري الاتصال بالمدير التنفيذي...";
+  $("answer").textContent="يرجى الانتظار...";
+  try{
+    const response=await fetch("/api/ceo",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({task,context})
+    });
+    const data=await response.json();
+    if(!response.ok)throw new Error(data.error||"فشل الاتصال بالخادم");
+    $("answer").textContent=typeof data==="string"?data:JSON.stringify(data,null,2);
+    $("ceoStatus").textContent="تم استلام استجابة الخادم.";
+  }catch(error){
+    $("answer").textContent="تعذر إكمال الطلب: "+error.message;
+    $("ceoStatus").textContent="حدث خطأ في الاتصال.";
+  }finally{
+    button.disabled=false;
+  }
+}
+function renderReports(){
+  $("reportContent").textContent=
+    "عدد المشاريع: "+projects.length+
+    "\nعدد المهام: "+tasks.length+
+    "\nالأقسام الإدارية: 8";
+}
+render();
+</script>
+</body>
+</html>
