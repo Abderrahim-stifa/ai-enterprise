@@ -4,245 +4,901 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI ENTERPRISE | مركز القيادة</title>
+<meta name="theme-color" content="#071426">
+<meta name="description" content="AI ENTERPRISE - Technology, Innovation & Business Solutions">
+<title>AI ENTERPRISE | منصة الإدارة الذكية</title>
+
 <style>
-:root {
-  --bg:#0b1020;--panel:#141c30;--panel2:#19243b;
-  --text:#edf2ff;--muted:#9aa9c5;--accent:#6c8cff;
-  --border:#26334e;--green:#35c99a;
+:root{
+  --bg:#071426;
+  --bg2:#0b1c32;
+  --panel:#10243b;
+  --panel2:#142c47;
+  --text:#f1f6fc;
+  --muted:#9eafc4;
+  --accent:#25a9ed;
+  --accent2:#73d4ff;
+  --silver:#c4ced9;
+  --border:#29415d;
+  --green:#39c99b;
+  --danger:#ff7777;
+  --radius:15px;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);
-font-family:Arial,Tahoma,sans-serif}
-header{padding:22px 5%;background:#111a2d;border-bottom:1px solid var(--border);
-display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
-.logo{font-size:23px;font-weight:bold;letter-spacing:1px}
-.logo span{color:var(--accent)}
-.status{color:var(--green);font-size:13px}
-.layout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 75px)}
-aside{background:#10182a;padding:22px 14px;border-left:1px solid var(--border)}
-nav button{width:100%;text-align:right;padding:13px;margin:4px 0;
-background:transparent;border:0;color:var(--muted);border-radius:8px;
-cursor:pointer;font-size:14px}
-nav button:hover,nav button.active{background:#243454;color:white}
-main{padding:28px;max-width:1400px;width:100%;margin:auto}
-h1{font-size:25px;margin:0 0 8px}
-.sub{color:var(--muted);margin-bottom:25px;font-size:14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px}
-.card{background:var(--panel);border:1px solid var(--border);
-border-radius:12px;padding:19px}
-.card small{color:var(--muted)}
-.number{font-size:27px;font-weight:bold;margin-top:12px}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,Tahoma,sans-serif;
+  line-height:1.7;
+}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+header{
+  min-height:85px;
+  padding:15px 5%;
+  background:#09192c;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+}
+.logo-area{display:flex;align-items:center;gap:13px}
+.logo-icon{
+  width:49px;height:49px;
+  border:2px solid var(--accent);
+  border-radius:13px;
+  display:grid;place-items:center;
+  font-size:24px;font-weight:bold;
+  color:var(--accent2);
+  box-shadow:0 0 20px #168bd833;
+}
+.logo{font-size:22px;font-weight:bold;letter-spacing:1px}
+.logo span{color:var(--accent2)}
+.tagline{font-size:11px;color:var(--muted);letter-spacing:1px}
+.header-right{display:flex;align-items:center;gap:14px}
+.status{
+  color:var(--green);
+  font-size:12px;
+  border:1px solid #39c99b44;
+  border-radius:30px;
+  padding:6px 12px;
+}
+.layout{
+  display:grid;
+  grid-template-columns:245px minmax(0,1fr);
+  min-height:calc(100vh - 85px);
+}
+aside{
+  background:#09192c;
+  padding:23px 14px;
+  border-left:1px solid var(--border);
+}
+.nav-title{
+  color:var(--muted);
+  font-size:11px;
+  padding:0 12px;
+  margin:0 0 10px;
+}
+nav button{
+  width:100%;
+  text-align:right;
+  padding:12px 14px;
+  margin:3px 0;
+  background:transparent;
+  border:1px solid transparent;
+  color:var(--muted);
+  border-radius:10px;
+  font-size:14px;
+  transition:.2s;
+}
+nav button:hover,nav button.active{
+  background:#163451;
+  border-color:#24547a;
+  color:white;
+}
+nav button.active{border-right:3px solid var(--accent)}
+main{
+  padding:30px;
+  max-width:1500px;
+  width:100%;
+  margin:auto;
+}
 .section{display:none}
 .section.active{display:block}
-.panel{background:var(--panel);border:1px solid var(--border);
-border-radius:12px;padding:22px;margin-top:20px}
-.panel h2{font-size:18px;margin-top:0}
-.departments{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
-.dept{background:var(--panel2);padding:17px;border-radius:10px;border:1px solid var(--border)}
-.dept b{display:block;margin-bottom:8px}
-.dept small{color:var(--muted)}
-input,textarea{width:100%;padding:14px;background:#0d1527;color:white;
-border:1px solid var(--border);border-radius:8px;font:inherit;margin:8px 0}
+h1{font-size:25px;margin:0 0 7px}
+h2{font-size:18px;margin:0 0 14px}
+h3{font-size:15px;margin:0 0 9px}
+.sub{color:var(--muted);font-size:13px;margin:0 0 23px}
+.hero{
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(120deg,#102e4c,#0b1b30 70%);
+  border:1px solid #2b587b;
+  border-radius:20px;
+  padding:35px;
+  margin-bottom:22px;
+}
+.hero:after{
+  content:"AI";
+  position:absolute;
+  left:30px;top:-55px;
+  font-size:180px;
+  font-weight:bold;
+  color:#ffffff08;
+  pointer-events:none;
+}
+.hero h1{font-size:31px;position:relative}
+.hero p{color:#c2d1df;max-width:700px;position:relative}
+.hero-label{
+  color:var(--accent2);
+  font-size:12px;
+  letter-spacing:2px;
+  margin-bottom:9px;
+}
+.hero-tag{
+  display:inline-block;
+  border:1px solid #65caff66;
+  padding:6px 13px;
+  border-radius:25px;
+  color:var(--accent2);
+  font-size:12px;
+  margin-top:8px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(175px,1fr));
+  gap:14px;
+}
+.card,.panel{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+}
+.card small{color:var(--muted)}
+.number{font-size:27px;font-weight:bold;margin-top:8px}
+.card-icon{font-size:22px;color:var(--accent2);margin-bottom:8px}
+.panel{margin-top:19px}
+.panel p{color:#d3dfeb;font-size:14px}
+.service-grid,.departments{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:13px;
+}
+.service,.dept{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:17px;
+}
+.service-icon{font-size:25px;margin-bottom:8px}
+.service b,.dept b{display:block;margin-bottom:5px}
+.service small,.dept small{color:var(--muted);font-size:12px}
+.dept-code{color:var(--accent2);font-size:12px;margin-bottom:7px}
+.badge{
+  display:inline-block;
+  border:1px solid #39c99b55;
+  color:var(--green);
+  border-radius:30px;
+  padding:3px 9px;
+  font-size:11px;
+}
+input,textarea{
+  width:100%;
+  padding:13px 14px;
+  background:#09192c;
+  color:white;
+  border:1px solid var(--border);
+  border-radius:9px;
+  margin:7px 0 12px;
+  outline:none;
+}
+input:focus,textarea:focus{border-color:var(--accent)}
 textarea{min-height:115px;resize:vertical}
-button.primary{background:var(--accent);color:white;border:0;padding:12px 20px;
-border-radius:8px;cursor:pointer;font-weight:bold}
+label{font-size:13px;color:#c8d6e5}
+.primary,.secondary,.danger-button{
+  border:0;
+  border-radius:9px;
+  padding:11px 18px;
+  font-weight:bold;
+}
+.primary{
+  background:linear-gradient(110deg,#168ed0,#35b8f4);
+  color:white;
+}
+.secondary{
+  background:#203b58;
+  color:white;
+  border:1px solid var(--border);
+}
+.danger-button{
+  background:#542a36;color:#ffc4c4;
+  padding:6px 10px;font-size:11px;
+}
 button:disabled{opacity:.5;cursor:wait}
-#answer{white-space:pre-wrap;line-height:1.9;min-height:50px}
-.badge{color:var(--green);font-size:12px}
-footer{color:var(--muted);text-align:center;padding:25px;font-size:12px}
-@media(max-width:750px){
-.layout{grid-template-columns:1fr}
-aside{border-left:0;border-bottom:1px solid var(--border);padding:10px}
-nav{display:flex;overflow-x:auto}
-nav button{min-width:max-content;text-align:center}
-main{padding:18px}
+.button-row{display:flex;gap:9px;flex-wrap:wrap}
+#ceoStatus{font-size:12px;color:var(--accent2);margin-top:12px}
+.report-warning{
+  padding:12px 15px;
+  background:#3d351b;
+  border:1px solid #8a7132;
+  color:#ffe2a1;
+  border-radius:9px;
+  margin-bottom:15px;
+  font-size:13px;
+}
+.report-block{
+  background:#0b1b30;
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:16px;
+  margin:12px 0;
+}
+.report-block p{white-space:pre-wrap}
+.report-list{padding-right:22px;color:#d6e2ef}
+.report-list li{margin:6px 0}
+.plan-item{
+  border-right:3px solid var(--accent);
+  padding:10px 14px;
+  background:#112943;
+  margin:10px 0;
+  border-radius:7px;
+}
+.plan-item strong{color:var(--accent2)}
+.answer-departments{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:10px;
+}
+.answer-dept{
+  background:#112943;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px;
+}
+.answer-dept h3{color:var(--accent2)}
+.answer-dept p{font-size:13px;white-space:pre-wrap}
+.empty{
+  color:var(--muted);
+  text-align:center;
+  padding:20px;
+}
+.item-row{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px;
+  margin:9px 0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.item-row small{display:block;color:var(--muted)}
+footer{
+  color:var(--muted);
+  text-align:center;
+  padding:25px;
+  font-size:12px;
+  border-top:1px solid var(--border);
+}
+@media(max-width:800px){
+  .layout{grid-template-columns:1fr}
+  aside{
+    border-left:0;
+    border-bottom:1px solid var(--border);
+    padding:9px;
+  }
+  .nav-title{display:none}
+  nav{display:flex;overflow-x:auto;gap:4px}
+  nav button{min-width:max-content;width:auto;text-align:center}
+  main{padding:17px}
+  .hero{padding:24px}
+  .hero h1{font-size:25px}
+}
+@media(max-width:450px){
+  header{padding:12px 15px}
+  .logo{font-size:18px}
+  .status{font-size:10px}
+  .hero{padding:20px}
+  .item-row{align-items:flex-start}
 }
 </style>
 </head>
+
 <body>
+
 <header>
-  <div class="logo">AI <span>ENTERPRISE</span></div>
-  <div class="status">● مركز القيادة جاهز</div>
+  <div class="logo-area">
+    <div class="logo-icon">AI</div>
+    <div>
+      <div class="logo">AI <span>ENTERPRISE</span></div>
+      <div class="tagline">TECHNOLOGY · INNOVATION · BUSINESS</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="status">● المنصة متاحة</div>
+  </div>
 </header>
 
 <div class="layout">
+
 <aside>
-<nav>
-<button class="active" data-page="dashboard">لوحة القيادة</button>
-<button data-page="ceo">مكتب CEO الذكي</button>
-<button data-page="departments">الأقسام والإدارة</button>
-<button data-page="projects">المشاريع</button>
-<button data-page="tasks">المهام</button>
-<button data-page="reports">التقارير</button>
-</nav>
+  <p class="nav-title">القائمة الرئيسية</p>
+  <nav>
+    <button class="active" data-page="dashboard">⌂ لوحة القيادة</button>
+    <button data-page="ceo">◈ مكتب المدير التنفيذي</button>
+    <button data-page="departments">▦ الأقسام والإدارة</button>
+    <button data-page="projects">▣ المشاريع</button>
+    <button data-page="tasks">✓ المهام</button>
+    <button data-page="reports">▤ التقارير</button>
+  </nav>
 </aside>
 
 <main>
+
 <section id="dashboard" class="section active">
-<h1>لوحة القيادة الرئيسية</h1>
-<p class="sub">نظرة عامة على أداء ومكونات AI ENTERPRISE</p>
-<div class="grid">
-<div class="card"><small>الأقسام الإدارية</small><div class="number">8</div></div>
-<div class="card"><small>المشاريع</small><div class="number" id="projectCount">0</div></div>
-<div class="card"><small>المهام المسجلة</small><div class="number" id="taskCount">0</div></div>
-<div class="card"><small>حالة المنصة</small><div class="number" style="color:var(--green)">نشطة</div></div>
-</div>
-<div class="panel">
-<h2>الرؤية المؤسسية</h2>
-<p>بناء مؤسسة تعتمد على الذكاء الاصطناعي في التخطيط والتحليل والبحث والتطوير وإدارة العمليات، مع إشراف مركزي من المدير التنفيذي.</p>
-</div>
-<div class="panel">
-<h2>مركز النشاط</h2>
-<p class="sub">يمكنك إدارة الأقسام والمهام والمشاريع والتواصل مع المدير التنفيذي الذكي.</p>
-</div>
+
+  <div class="hero">
+    <div class="hero-label">WELCOME TO AI ENTERPRISE</div>
+    <h1>مرحباً بك في مركز قيادة الشركة</h1>
+    <p>
+      منصة مركزية لتخطيط وإدارة مشاريع AI ENTERPRISE،
+      وتحليل الأعمال وتطوير الحلول التكنولوجية والرقمية.
+    </p>
+    <span class="hero-tag">من المغرب نحو الأسواق الدولية</span>
+  </div>
+
+  <h2>نظرة عامة</h2>
+  <p class="sub">المؤشرات المسجلة داخل المنصة</p>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-icon">▦</div>
+      <small>الوحدات الإدارية</small>
+      <div class="number">8</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">▣</div>
+      <small>المشاريع المسجلة</small>
+      <div class="number" id="projectCount">0</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">✓</div>
+      <small>المهام المسجلة</small>
+      <div class="number" id="taskCount">0</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">◎</div>
+      <small>مرحلة الشركة</small>
+      <div class="number" style="font-size:19px;color:var(--accent2)">التأسيس</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>من نحن؟</h2>
+    <p>
+      AI ENTERPRISE مجموعة أعمال مغربية قيد التأسيس،
+      تستهدف تطوير وتقديم حلول في البرمجة والذكاء الاصطناعي
+      والتسويق والخدمات العقارية ومجالات أخرى.
+    </p>
+  </div>
+
+  <div class="panel">
+    <h2>مجالات النشاط</h2>
+    <div class="service-grid">
+      <div class="service">
+        <div class="service-icon">⌘</div>
+        <b>البرمجة والذكاء الاصطناعي</b>
+        <small>تطوير المواقع والتطبيقات والحلول الذكية.</small>
+      </div>
+      <div class="service">
+        <div class="service-icon">↗</div>
+        <b>التسويق الرقمي</b>
+        <small>التسويق الإلكتروني وإدارة الحملات والعلامات التجارية.</small>
+      </div>
+      <div class="service">
+        <div class="service-icon">⌂</div>
+        <b>الخدمات العقارية</b>
+        <small>التسويق العقاري والحلول الرقمية للقطاع العقاري.</small>
+      </div>
+      <div class="service">
+        <div class="service-icon">◇</div>
+        <b>خدمات متنوعة</b>
+        <small>تطوير أنشطة وخدمات جديدة حسب فرص السوق.</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>التوجه الاستراتيجي</h2>
+    <p>
+      الانطلاق من السوق المغربي، وبناء خدمات ومنتجات قابلة
+      للتوسع دولياً، مع التركيز أولاً على التكنولوجيا والذكاء الاصطناعي.
+    </p>
+  </div>
+
 </section>
 
 <section id="ceo" class="section">
-<h1>مكتب المدير التنفيذي CEO</h1>
-<p class="sub">أرسل توجيهاتك إلى المدير التنفيذي للحصول على تحليل وتوصيات من الذكاء الاصطناعي.</p>
-<div class="panel">
-<h2>التوجيه التنفيذي</h2>
-<textarea id="ceoTask" placeholder="اكتب الهدف أو المهمة التي تريد من المدير التنفيذي تحليلها..."></textarea>
-<textarea id="ceoContext" placeholder="معلومات إضافية أو سياق المهمة (اختياري)"></textarea>
-<button class="primary" id="runCEO" onclick="runCEO()">إرسال إلى المدير التنفيذي</button>
-<p id="ceoStatus" class="badge"></p>
-</div>
-<div class="panel">
-<h2>تقرير المدير التنفيذي</h2>
-<div id="answer">ستظهر هنا نتيجة التحليل بعد إرسال المهمة.</div>
-</div>
+  <h1>مكتب المدير التنفيذي CEO</h1>
+  <p class="sub">
+    أرسل مهمة أو سؤالاً للحصول على تحليل وتوصيات من نظام الذكاء الاصطناعي.
+  </p>
+
+  <div class="panel">
+    <h2>التوجيه التنفيذي</h2>
+    <label for="ceoTask">المهمة المطلوبة</label>
+    <textarea id="ceoTask" placeholder="مثال: ضع خطة لتطوير خدمات البرمجة والذكاء الاصطناعي خلال 30 يوماً."></textarea>
+
+    <label for="ceoContext">معلومات الشركة والسياق</label>
+    <textarea id="ceoContext" placeholder="اكتب المعلومات المتوفرة عن الشركة أو المشروع أو الميزانية أو العملاء..."></textarea>
+
+    <div class="button-row">
+      <button class="primary" id="runCEO" onclick="runCEO()">إرسال إلى المدير التنفيذي</button>
+      <button class="secondary" onclick="clearCEO()">مسح الحقول</button>
+    </div>
+    <p id="ceoStatus"></p>
+  </div>
+
+  <div class="panel">
+    <h2>تقرير المدير التنفيذي</h2>
+    <div id="answer">
+      <div class="empty">ستظهر هنا نتيجة التحليل بعد إرسال المهمة.</div>
+    </div>
+  </div>
 </section>
 
 <section id="departments" class="section">
-<h1>الإدارة والأقسام</h1>
-<p class="sub">الهيكل التنظيمي للمؤسسة</p>
-<div class="departments">
-<div class="dept"><b>CEO — المدير التنفيذي</b><small>القيادة والاستراتيجية والقرارات العليا</small></div>
-<div class="dept"><b>COO — مدير العمليات</b><small>التشغيل وإدارة العمليات اليومية</small></div>
-<div class="dept"><b>CFO — المدير المالي</b><small>الميزانيات والتكاليف والتخطيط المالي</small></div>
-<div class="dept"><b>CTO — المدير التقني</b><small>البنية التقنية والهندسة والأنظمة</small></div>
-<div class="dept"><b>CMO — مدير التسويق</b><small>التسويق والعلامة التجارية والنمو</small></div>
-<div class="dept"><b>CPO — مدير المنتجات</b><small>تطوير المنتجات وتجربة المستخدم</small></div>
-<div class="dept"><b>CRO — مدير الإيرادات</b><small>المبيعات والعملاء وتنمية الإيرادات</small></div>
-<div class="dept"><b>R&D — البحث والتطوير</b><small>الابتكار والتجارب والبحث العلمي</small></div>
-</div>
+  <h1>الإدارة والأقسام</h1>
+  <p class="sub">الهيكل التنظيمي المقترح لـ AI ENTERPRISE</p>
+
+  <div class="departments">
+    <div class="dept">
+      <div class="dept-code">CEO</div>
+      <b>المدير التنفيذي</b>
+      <small>القيادة والاستراتيجية ومراجعة القرارات.</small>
+    </div>
+    <div class="dept">
+      <div class="dept-code">COO</div>
+      <b>مدير العمليات</b>
+      <small>تنظيم العمل والعمليات والإجراءات.</small>
+    </div>
+    <div class="dept">
+      <div class="dept-code">CFO</div>
+      <b>المدير المالي</b>
+      <small>الميزانيات والتكاليف والتخطيط المالي.</small>
+    </div>
+    <div class="dept">
+      <div class="dept-code">CTO</div>
+      <b>المدير التقني</b>
+      <small>البرمجة والهندسة والبنية التقنية.</small>
+    </div>
+    <div class="dept">
+      <div class="dept-code">CMO</div>
+      <b>مدير التسويق</b>
+      <small>التسويق والعلامة التجارية ودراسة السوق.</small>
+    </div>
+    <div class="dept">
+      <div class="dept-code">CRO</div>
+      <b>مدير الإيرادات</b>
+      <small>المبيعات والعملاء وتطوير الأعمال.</small>
+    </div>
+    <div class="dept">
+      <div class="dept-code">CPO</div>
+      <b>مدير المنتجات</b>
+      <small>تطوير المنتجات وتجربة المستخدم.</small>
+    </div>
+    <div class="dept">
+      <div class="dept-code">R&D</div>
+      <b>البحث والتطوير</b>
+      <small>الابتكار والبحث والتجارب التقنية.</small>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>ملاحظة تنظيمية</h2>
+    <p>
+      هذه وحدات إدارية استشارية داخل المنصة، وليست موظفين
+      حقيقيين أو إدارات مستقلة. القرارات والتنفيذ الفعلي
+      يخضعان لإشراف إدارة الشركة.
+    </p>
+  </div>
 </section>
 
 <section id="projects" class="section">
-<h1>إدارة المشاريع</h1>
-<p class="sub">تسجيل المشاريع ومتابعتها</p>
-<div class="panel">
-<input id="projectName" placeholder="اسم المشروع">
-<textarea id="projectDesc" placeholder="وصف المشروع وأهدافه"></textarea>
-<button class="primary" onclick="addProject()">إضافة مشروع</button>
-</div>
-<div class="panel"><h2>قائمة المشاريع</h2><div id="projectList">لا توجد مشاريع مسجلة.</div></div>
+  <h1>إدارة المشاريع</h1>
+  <p class="sub">تسجيل المشاريع والأفكار ومتابعتها.</p>
+
+  <div class="panel">
+    <h2>مشروع جديد</h2>
+    <label for="projectName">اسم المشروع</label>
+    <input id="projectName" placeholder="مثال: تطوير منصة خدمات رقمية">
+
+    <label for="projectDesc">وصف المشروع</label>
+    <textarea id="projectDesc" placeholder="اكتب وصف المشروع وأهدافه..."></textarea>
+
+    <button class="primary" onclick="addProject()">إضافة المشروع</button>
+  </div>
+
+  <div class="panel">
+    <h2>المشاريع المسجلة</h2>
+    <div id="projectList"></div>
+  </div>
 </section>
 
 <section id="tasks" class="section">
-<h1>إدارة المهام</h1>
-<p class="sub">توزيع وتسجيل ومتابعة المهام</p>
-<div class="panel">
-<input id="taskName" placeholder="عنوان المهمة">
-<input id="taskOwner" placeholder="القسم المسؤول">
-<button class="primary" onclick="addTask()">إضافة مهمة</button>
-</div>
-<div class="panel"><h2>قائمة المهام</h2><div id="taskList">لا توجد مهام مسجلة.</div></div>
+  <h1>إدارة المهام</h1>
+  <p class="sub">تسجيل المهام وتحديد القسم المسؤول عنها.</p>
+
+  <div class="panel">
+    <h2>مهمة جديدة</h2>
+    <label for="taskName">عنوان المهمة</label>
+    <input id="taskName" placeholder="عنوان المهمة">
+
+    <label for="taskOwner">القسم المسؤول</label>
+    <select id="taskOwner">
+      <option value="">اختر القسم</option>
+      <option>CEO</option>
+      <option>COO</option>
+      <option>CFO</option>
+      <option>CTO</option>
+      <option>CMO</option>
+      <option>CRO</option>
+      <option>CPO</option>
+      <option>R&D</option>
+    </select>
+
+    <button class="primary" onclick="addTask()">إضافة المهمة</button>
+  </div>
+
+  <div class="panel">
+    <h2>المهام المسجلة</h2>
+    <div id="taskList"></div>
+  </div>
 </section>
 
 <section id="reports" class="section">
-<h1>التقارير</h1>
-<p class="sub">ملخص البيانات المسجلة داخل المنصة</p>
-<div class="panel" id="reportContent"></div>
+  <h1>التقارير</h1>
+  <p class="sub">ملخص المشاريع والمهام المسجلة محلياً.</p>
+
+  <div class="grid">
+    <div class="card">
+      <small>عدد المشاريع</small>
+      <div class="number" id="reportProjects">0</div>
+    </div>
+    <div class="card">
+      <small>عدد المهام</small>
+      <div class="number" id="reportTasks">0</div>
+    </div>
+    <div class="card">
+      <small>الأقسام الإدارية</small>
+      <div class="number">8</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>حالة المنصة</h2>
+    <p>
+      هذه الأرقام تعكس السجلات المحفوظة في المتصفح الحالي،
+      ولا تمثل بيانات مالية أو تشغيلية فعلية للشركة.
+    </p>
+    <button class="secondary" onclick="renderReports()">تحديث التقرير</button>
+  </div>
 </section>
+
 </main>
 </div>
 
-<footer>AI ENTERPRISE © 2026 — منصة الإدارة الذكية</footer>
+<footer>
+  AI ENTERPRISE © 2026 — Technology · Innovation · Business
+  <br>من المغرب نحو الأسواق الدولية
+</footer>
 
 <script>
 const $ = id => document.getElementById(id);
 
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g,c=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[c]);
+}
+
+/* التنقل */
 document.querySelectorAll("nav button").forEach(button=>{
   button.addEventListener("click",()=>{
     document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
     document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+
     button.classList.add("active");
     $(button.dataset.page).classList.add("active");
+
     if(button.dataset.page==="reports") renderReports();
   });
 });
 
-let projects=JSON.parse(localStorage.getItem("aie_projects")||"[]");
-let tasks=JSON.parse(localStorage.getItem("aie_tasks")||"[]");
+/* التخزين المحلي */
+function loadArray(key){
+  try{
+    const value=JSON.parse(localStorage.getItem(key)||"[]");
+    return Array.isArray(value)?value:[];
+  }catch{
+    return [];
+  }
+}
+
+let projects=loadArray("aie_projects");
+let tasks=loadArray("aie_tasks");
 
 function save(){
-  localStorage.setItem("aie_projects",JSON.stringify(projects));
-  localStorage.setItem("aie_tasks",JSON.stringify(tasks));
-  render();
+  try{
+    localStorage.setItem("aie_projects",JSON.stringify(projects));
+    localStorage.setItem("aie_tasks",JSON.stringify(tasks));
+    render();
+  }catch{
+    alert("تعذر حفظ البيانات في المتصفح.");
+  }
 }
+
+/* عرض المشاريع والمهام */
 function render(){
   $("projectCount").textContent=projects.length;
   $("taskCount").textContent=tasks.length;
-  $("projectList").innerHTML=projects.length?projects.map(p=>
-    `<div class="dept"><b>${escapeHTML(p.name)}</b><small>${escapeHTML(p.desc)}</small></div>`
-  ).join(""):"لا توجد مشاريع مسجلة.";
-  $("taskList").innerHTML=tasks.length?tasks.map(t=>
-    `<div class="dept"><b>${escapeHTML(t.name)}</b><small>القسم: ${escapeHTML(t.owner||"غير محدد")}</small></div>`
-  ).join(""):"لا توجد مهام مسجلة.";
+
+  $("projectList").innerHTML=projects.length
+    ?projects.map((p,i)=>`
+      <div class="item-row">
+        <div>
+          <b>${escapeHTML(p.name)}</b>
+          <small>${escapeHTML(p.desc||"لا يوجد وصف.")}</small>
+        </div>
+        <button class="danger-button" onclick="deleteProject(${i})">حذف</button>
+      </div>
+    `).join("")
+    :'<div class="empty">لا توجد مشاريع مسجلة حالياً.</div>';
+
+  $("taskList").innerHTML=tasks.length
+    ?tasks.map((t,i)=>`
+      <div class="item-row">
+        <div>
+          <b>${escapeHTML(t.name)}</b>
+          <small>القسم المسؤول: ${escapeHTML(t.owner||"غير محدد")}</small>
+        </div>
+        <button class="danger-button" onclick="deleteTask(${i})">حذف</button>
+      </div>
+    `).join("")
+    :'<div class="empty">لا توجد مهام مسجلة حالياً.</div>';
 }
-function escapeHTML(value){
-  return String(value).replace(/[&<>"']/g,c=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[c]);
-}
+
 function addProject(){
   const name=$("projectName").value.trim();
+  const desc=$("projectDesc").value.trim();
+
   if(!name)return alert("أدخل اسم المشروع.");
-  projects.push({name,desc:$("projectDesc").value.trim()});
-  $("projectName").value="";$("projectDesc").value="";
+
+  projects.push({name,desc});
+  $("projectName").value="";
+  $("projectDesc").value="";
   save();
 }
+
 function addTask(){
   const name=$("taskName").value.trim();
+  const owner=$("taskOwner").value;
+
   if(!name)return alert("أدخل عنوان المهمة.");
-  tasks.push({name,owner:$("taskOwner").value.trim()});
-  $("taskName").value="";$("taskOwner").value="";
+
+  tasks.push({name,owner});
+  $("taskName").value="";
+  $("taskOwner").value="";
   save();
 }
+
+function deleteProject(index){
+  if(!confirm("هل تريد حذف هذا المشروع؟"))return;
+  projects.splice(index,1);
+  save();
+}
+
+function deleteTask(index){
+  if(!confirm("هل تريد حذف هذه المهمة؟"))return;
+  tasks.splice(index,1);
+  save();
+}
+
+/* التقارير */
+function renderReports(){
+  $("reportProjects").textContent=projects.length;
+  $("reportTasks").textContent=tasks.length;
+}
+
+/* أدوات عرض تقرير CEO */
+function renderList(items){
+  if(!Array.isArray(items)||!items.length){
+    return '<p class="sub">لا توجد بيانات مسجلة.</p>';
+  }
+
+  return `<ul class="report-list">${
+    items.map(item=>`<li>${escapeHTML(item)}</li>`).join("")
+  }</ul>`;
+}
+
+function renderCEOReport(data){
+  if(typeof data==="string"){
+    $("answer").innerHTML=`
+      <div class="report-block">
+        <p>${escapeHTML(data)}</p>
+      </div>`;
+    return;
+  }
+
+  if(!data||typeof data!=="object"){
+    $("answer").textContent="لم يتم استلام تقرير صالح.";
+    return;
+  }
+
+  const ceo=data.ceo||{};
+  let html="";
+
+  if(data.warning){
+    html+=`<div class="report-warning">${escapeHTML(data.warning)}</div>`;
+  }
+
+  if(typeof ceo==="string"){
+    html+=`<div class="report-block"><h3>تقرير المدير التنفيذي</h3><p>${escapeHTML(ceo)}</p></div>`;
+  }else{
+    if(ceo.title){
+      html+=`<div class="report-block"><h2>${escapeHTML(ceo.title)}</h2>`;
+    }else{
+      html+='<div class="report-block"><h2>تقرير المدير التنفيذي</h2>';
+    }
+
+    if(ceo.assessment){
+      html+=`<h3>تقييم الوضع</h3><p>${escapeHTML(ceo.assessment)}</p>`;
+    }
+
+    if(ceo.decision){
+      html+=`<h3>القرار التنفيذي</h3><p>${escapeHTML(ceo.decision)}</p>`;
+    }
+
+    if(ceo.confirmed_information){
+      html+='<h3>المعلومات المؤكدة</h3>'+renderList(ceo.confirmed_information);
+    }
+
+    if(ceo.unavailable_information){
+      html+='<h3>المعلومات غير المتوفرة</h3>'+renderList(ceo.unavailable_information);
+    }
+
+    if(ceo.priorities){
+      html+='<h3>الأولويات</h3>'+renderList(ceo.priorities);
+    }
+
+    if(Array.isArray(ceo.plan_30_days)){
+      html+='<h3>خطة العمل خلال 30 يوماً</h3>';
+
+      ceo.plan_30_days.forEach(item=>{
+        html+=`
+          <div class="plan-item">
+            <strong>${escapeHTML(item.period||"مرحلة")}</strong>
+            <p><b>${escapeHTML(item.objective||"")}</b></p>
+            ${renderList(item.tasks)}
+            <small>المسؤول: ${escapeHTML(item.owner||"غير محدد")}</small>
+            <p>التحقق: ${escapeHTML(item.verification||"غير محدد")}</p>
+          </div>`;
+      });
+    }
+
+    if(Array.isArray(ceo.risks)){
+      html+='<h3>المخاطر وطرق الحد منها</h3>';
+
+      ceo.risks.forEach(item=>{
+        html+=`
+          <div class="plan-item">
+            <b>${escapeHTML(item.risk||"مخاطر")}</b>
+            <p>${escapeHTML(item.mitigation||"")}</p>
+          </div>`;
+      });
+    }
+
+    if(ceo.kpis){
+      html+='<h3>مؤشرات الأداء والتحقق</h3>'+renderList(ceo.kpis);
+    }
+
+    html+="</div>";
+  }
+
+  if(data.departments&&typeof data.departments==="object"){
+    html+='<div class="report-block"><h2>تقارير الأقسام</h2><div class="answer-departments">';
+
+    Object.entries(data.departments).forEach(([key,dept])=>{
+      html+=`
+        <div class="answer-dept">
+          <h3>${escapeHTML(key)} — ${escapeHTML(dept.name||"")}</h3>
+          <span class="badge">${escapeHTML(dept.status||"تقرير")}</span>
+          <p>${escapeHTML(dept.analysis||"")}</p>
+          ${dept.recommendations
+            ?'<b>التوصيات</b>'+renderList(dept.recommendations)
+            :""}
+          ${dept.missing_information
+            ?'<b>البيانات الناقصة</b>'+renderList(dept.missing_information)
+            :""}
+        </div>`;
+    });
+
+    html+="</div></div>";
+  }
+
+  if(!html){
+    html=`<div class="report-block"><pre>${escapeHTML(JSON.stringify(data,null,2))}</pre></div>`;
+  }
+
+  $("answer").innerHTML=html;
+}
+
+/* الاتصال بالمدير التنفيذي */
 async function runCEO(){
   const task=$("ceoTask").value.trim();
   const context=$("ceoContext").value.trim();
+
   if(!task)return alert("اكتب المهمة أولاً.");
+
   const button=$("runCEO");
   button.disabled=true;
+
   $("ceoStatus").textContent="جاري الاتصال بالمدير التنفيذي...";
-  $("answer").textContent="يرجى الانتظار...";
+  $("answer").innerHTML='<div class="empty">جاري إعداد التقرير، المرجو الانتظار...</div>';
+
   try{
     const response=await fetch("/api/ceo",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({task,context})
     });
-    const data=await response.json();
-    if(!response.ok)throw new Error(data.error||"فشل الاتصال بالخادم");
-    $("answer").textContent=typeof data==="string"?data:JSON.stringify(data,null,2);
-    $("ceoStatus").textContent="تم استلام استجابة الخادم.";
+
+    const raw=await response.text();
+    let data;
+
+    try{
+      data=JSON.parse(raw);
+    }catch{
+      throw new Error("استجابة الخادم غير مفهومة.");
+    }
+
+    if(!response.ok){
+      throw new Error(data.message||data.error||"فشل الاتصال بالخادم.");
+    }
+
+    if(data.status==="error"){
+      throw new Error(data.message||"تعذر إعداد التقرير.");
+    }
+
+    renderCEOReport(data);
+    $("ceoStatus").textContent="تم استلام التقرير بنجاح.";
   }catch(error){
     $("answer").textContent="تعذر إكمال الطلب: "+error.message;
-    $("ceoStatus").textContent="حدث خطأ في الاتصال.";
+    $("ceoStatus").textContent="حدث خطأ أثناء الاتصال.";
   }finally{
     button.disabled=false;
   }
 }
-function renderReports(){
-  $("reportContent").textContent=
-    "عدد المشاريع: "+projects.length+
-    "\nعدد المهام: "+tasks.length+
-    "\nالأقسام الإدارية: 8";
+
+function clearCEO(){
+  $("ceoTask").value="";
+  $("ceoContext").value="";
+  $("ceoStatus").textContent="";
+  $("answer").innerHTML='<div class="empty">ستظهر هنا نتيجة التحليل بعد إرسال المهمة.</div>';
 }
+
 render();
+renderReports();
 </script>
+
 </body>
 </html>
