@@ -4,6 +4,7 @@
 
 // ====== إعدادات سهلة التغيير ======
 const MODEL = "@cf/google/gemma-4-26b-a4b-it"; // مجاني على خطة Workers Free (يُراجع في وثائق Cloudflare)
+const FALLBACK_MODEL = "@cf/meta/llama-3.2-3b-instruct"; // احتياطي مجاني، يُستعمل فقط إذا فشل النموذج الأول
 const ALLOWED_ORIGIN = "https://ai-enterprise.pages.dev";
 const AGENT_MAX_TOKENS = 700;
 const CEO_MAX_TOKENS = 900;
@@ -97,8 +98,9 @@ function extractText(result) {
   return text.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
 }
 
-async function runModel(env, system, user, maxTokens) {
-  const result = await env.AI.run(MODEL, {
+// حالة المحاولات (للتشخيص فقط، تُعرض لصاحب الرمز بعد المصادقة).
+async function callModel(env, model, system, user, maxTokens) {
+  const result = await env.AI.run(model, {
     messages: [
       { role: "system", content: system },
       { role: "user", content: user }
@@ -110,10 +112,24 @@ async function runModel(env, system, user, maxTokens) {
   const text = extractText(result);
 
   if (!text) {
-    console.error("Empty model output. Keys:", result && typeof result === "object" ? Object.keys(result) : typeof result);
-    throw new Error("لم يرجع النموذج نصاً صالحاً.");
+    const keys = result && typeof result === "object" ? Object.keys(result).join(",") : typeof result;
+    throw new Error("رد فارغ من النموذج. مفاتيح الرد: " + keys);
   }
   return text;
+}
+
+async function runModel(env, system, user, maxTokens, info) {
+  try {
+    return await callModel(env, MODEL, system, user, maxTokens);
+  } catch (primaryError) {
+    console.error("Primary model failed:", primaryError);
+    info.errors.push(`${MODEL}: ${String(primaryError?.message || primaryError).slice(0, 300)}`);
+
+    // احتياطي مجاني (وليس مدفوعاً). إذا فشل أيضاً نرمي الخطأ.
+    const text = await callModel(env, FALLBACK_MODEL, system, user, maxTokens);
+    info.fallback = true;
+    return text;
+  }
 }
 
 function agentSystemPrompt(key) {
@@ -143,7 +159,7 @@ ${COMMON_RULES}
 لا تكرر ما كتبه الوكلاء حرفياً.`;
 }
 
-async function buildReport(env, task, context) {
+async function buildReport(env, task, context, info) {
   const userMessage =
     `طلب صاحب المشروع:\n${task}\n\nمعلومات إضافية:\n${context || "لا توجد."}`;
 
@@ -151,7 +167,7 @@ async function buildReport(env, task, context) {
 
   // استدعاء منفصل لكل وكيل، بالتوازي.
   const settled = await Promise.allSettled(
-    keys.map(key => runModel(env, agentSystemPrompt(key), userMessage, AGENT_MAX_TOKENS))
+    keys.map(key => runModel(env, agentSystemPrompt(key), userMessage, AGENT_MAX_TOKENS, info))
   );
 
   const departments = {};
@@ -194,7 +210,8 @@ async function buildReport(env, task, context) {
       env,
       ceoSystemPrompt(),
       `${userMessage}\n\nتقارير الوكلاء:\n${successfulReports.join("\n\n")}`,
-      CEO_MAX_TOKENS
+      CEO_MAX_TOKENS,
+      info
     );
   } catch (error) {
     console.error("CEO synthesis failed:", error);
@@ -210,6 +227,8 @@ async function buildReport(env, task, context) {
     ceo,
     departments,
     failed,
+    model: info.fallback ? `${FALLBACK_MODEL} (احتياطي)` : MODEL,
+    diagnostics: info.errors.length ? [...new Set(info.errors)].slice(0, 3) : undefined,
     input_received: { task, context_provided: Boolean(context) }
   };
 }
@@ -256,8 +275,10 @@ export default {
       return json({ status: "error", message: "خاصك تدخل المهمة المطلوبة." }, 400);
     }
 
+    const info = { errors: [], fallback: false };
+
     try {
-      return json(await buildReport(env, task, context));
+      return json(await buildReport(env, task, context, info));
     } catch (error) {
       // التفاصيل في سجلات Cloudflare فقط. لا فاتورة ولا تحويل لخدمة مدفوعة.
       console.error("AI ENTERPRISE Worker error:", error);
@@ -266,7 +287,12 @@ export default {
         status: "error",
         message:
           "تعذر إنشاء التقرير. غالباً نفدت الحصة المجانية لليوم (تتجدد 00:00 UTC) أو الخدمة غير متاحة. حاول لاحقاً.",
-        retryable: true
+        retryable: true,
+        // تفاصيل للتشخيص. لا تصل إلا بعد التحقق من رمز الدخول.
+        diagnostics: [...new Set([
+          ...info.errors,
+          String(error?.message || error).slice(0, 300)
+        ])].slice(0, 4)
       }, 503);
     }
   }
