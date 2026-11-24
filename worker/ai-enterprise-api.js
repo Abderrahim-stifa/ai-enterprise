@@ -1,0 +1,273 @@
+// Worker: ai-enterprise-api
+// الصق هذا الملف كاملاً في Cloudflare: Workers & Pages > ai-enterprise-api > Edit code، ثم Deploy.
+// يحتاج: ربط Workers AI باسم AI، وسر API_SECRET (موجودان مسبقاً).
+
+// ====== إعدادات سهلة التغيير ======
+const MODEL = "@cf/google/gemma-4-26b-a4b-it"; // مجاني على خطة Workers Free (يُراجع في وثائق Cloudflare)
+const ALLOWED_ORIGIN = "https://ai-enterprise.pages.dev";
+const AGENT_MAX_TOKENS = 700;
+const CEO_MAX_TOKENS = 900;
+const TEMPERATURE = 0.3;
+
+// ====== ملف معطيات الشركة (مصدر واحد لجميع الوكلاء) ======
+// عدّل هذا النص فقط عندما تتغير الحقائق. لا تكتب هنا أرقاماً غير مؤكدة.
+const COMPANY_DATA = `
+الشركة: AI ENTERPRISE (الشعار: Technology. Innovation. Business).
+الوضع: مشروع في مرحلة التأسيس بالمغرب. غير مسجل قانونياً بعد. لا يوجد زبناء مؤكدون ولا موظفون ولا مداخيل.
+
+ماذا نبيع:
+- برامج تسيير تُبرمج حسب حاجة كل زبون (محلات، مقاهي، مطاعم سريعة، متاجر...).
+- وبرامج جاهزة نعطيها للزبون بترخيص استعمال. أمثلة منجزة من طرف صاحب المشروع: برنامج كاشير للمقهى والمطعم السريع (CAFE-POS)، برنامج لمحل ملابس، برنامج لمحل أجهزة منزلية.
+- CAFE-POS: يعمل على Windows 7 (32 بيت)، طابعة Xprinter XP-Q807K عبر USB، واجهة بالعربية والفرنسية والإسبانية والإنجليزية، أدوار (كاشير، مسيّر، مسؤول)، مخزون وتقارير. مشكلة معروفة غير محلولة: درج النقود يفتح بقوة، لذلك لا يُضمن الدرج.
+
+نموذج الترخيص:
+- الزبون يدفع مرة واحدة ويستعمل النسخة مدى الحياة على موقع واحد.
+- الشركة تحتفظ بالملكية الفكرية. للزبون حق الاستعمال فقط دون إعادة بيع. لا يُسلَّم الكود المصدري.
+- إذا ضاعت نسخة الزبون يشتريها من جديد بنصف الثمن.
+- إصدار جديد بميزات جديدة بنصف الثمن للزبون السابق.
+
+السوق واللغة: المغرب، العملة الدرهم، العربية والفرنسية.
+سياسة التكلفة: مجاني أولاً، دون أي خدمة مدفوعة.
+القطاع المستهدف الأول والمدينة والأثمنة: لم تُحدد بعد.
+`;
+
+const COMMON_RULES = `
+قواعد صارمة:
+- اعتمد فقط على معطيات الشركة وطلب المستخدم. لا تخترع أرقاماً أو أثماناً أو زبناء أو إنجازات.
+- لا تفترض أن الشركة مسجلة قانونياً.
+- ميّز بين: حقيقة مؤكدة، افتراض، توصية.
+- أنت تقترح فقط. لا تدّعِ أنك نفذت شيئاً أو تواصلت مع أحد.
+- اكتب بعربية واضحة ومختصرة، وبلا تكرار.
+- لا تكتب JSON ولا Markdown ثقيلاً. نص عادي بعناوين قصيرة.
+- لا تتجاوز 170 كلمة.
+`;
+
+// الوكلاء الأربعة المتخصصون + المدير. المفاتيح تطابق ما تعرضه الواجهة.
+const AGENTS = {
+  CRO: {
+    name: "المبيعات",
+    job: "تقترح كيف نجد أول زبناء ونكتب عروضاً وردوداً على الزبناء المحتملين، بخطوات ملموسة يمكن البدء بها هذا الأسبوع."
+  },
+  CMO: {
+    name: "المحتوى والتسويق",
+    job: "تقترح محتوى (إعلانات، سكريبتات فيديو قصير، رسائل واتساب) ورسائل تسويقية بسيطة ومجانية تناسب السوق المغربي."
+  },
+  CFO: {
+    name: "المحاسبة والأثمنة",
+    job: "تقترح منهجية لتحديد الأثمنة وهامش الربح وتتبع المصاريف والمداخيل، دون اختراع أرقام: اذكر المعطيات الناقصة التي يجب أن يحددها صاحب المشروع."
+  },
+  CTO: {
+    name: "المساعد التقني",
+    job: "تقترح الخطوات التقنية: ما ينقص البرامج قبل البيع (مثل مشكلة الدرج)، التوثيق، الاختبار، وحماية النسخ بمفتاح مرتبط بالجهاز."
+  }
+};
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Content-Type": "application/json; charset=utf-8"
+};
+
+function json(data, status = 200) {
+  return new Response(JSON.stringify(data), { status, headers: CORS_HEADERS });
+}
+
+function cleanText(value, maxLength) {
+  if (typeof value !== "string") return "";
+  return value.trim().slice(0, maxLength);
+}
+
+// يستخرج النص من أشكال الاستجابة المحتملة لنماذج Workers AI.
+function extractText(result) {
+  let text =
+    (typeof result === "string" ? result : null) ??
+    result?.response ??
+    result?.result?.response ??
+    result?.choices?.[0]?.message?.content ??
+    result?.choices?.[0]?.text ??
+    "";
+
+  if (Array.isArray(text)) {
+    text = text.map(part => (typeof part === "string" ? part : part?.text || "")).join("");
+  }
+  if (typeof text !== "string") return "";
+
+  // إزالة كتل التفكير إن ظهرت في النص.
+  return text.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+}
+
+async function runModel(env, system, user, maxTokens) {
+  const result = await env.AI.run(MODEL, {
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: user }
+    ],
+    max_tokens: maxTokens,
+    temperature: TEMPERATURE
+  });
+
+  const text = extractText(result);
+
+  if (!text) {
+    console.error("Empty model output. Keys:", result && typeof result === "object" ? Object.keys(result) : typeof result);
+    throw new Error("لم يرجع النموذج نصاً صالحاً.");
+  }
+  return text;
+}
+
+function agentSystemPrompt(key) {
+  const agent = AGENTS[key];
+  return `أنت وكيل "${agent.name}" في شركة AI ENTERPRISE. مهمتك: ${agent.job}
+
+معطيات الشركة:
+${COMPANY_DATA}
+${COMMON_RULES}
+الشكل المطلوب (نص عادي):
+الخلاصة: جملتان.
+التوصيات: ثلاث توصيات مرقمة، كل واحدة قابلة للتنفيذ وتخص تخصصك فقط.
+المعلومات الناقصة: حتى ثلاثة أسئلة محددة يجب أن يجيب عنها صاحب المشروع.`;
+}
+
+function ceoSystemPrompt() {
+  return `أنت المدير التنفيذي لشركة AI ENTERPRISE. تقرأ تقارير الوكلاء وتتخذ قراراً واحداً واضحاً للأسبوع القادم.
+
+معطيات الشركة:
+${COMPANY_DATA}
+${COMMON_RULES}
+الشكل المطلوب (نص عادي):
+الوضع: ما هو مؤكد، وما هو افتراض.
+القرار: أهم أولوية واحدة هذا الأسبوع، ولماذا.
+خطة 7 أيام: خمس خطوات قصيرة مرتبة.
+قرارات تحتاج صاحب المشروع: حتى ثلاثة أسئلة محددة.
+لا تكرر ما كتبه الوكلاء حرفياً.`;
+}
+
+async function buildReport(env, task, context) {
+  const userMessage =
+    `طلب صاحب المشروع:\n${task}\n\nمعلومات إضافية:\n${context || "لا توجد."}`;
+
+  const keys = Object.keys(AGENTS);
+
+  // استدعاء منفصل لكل وكيل، بالتوازي.
+  const settled = await Promise.allSettled(
+    keys.map(key => runModel(env, agentSystemPrompt(key), userMessage, AGENT_MAX_TOKENS))
+  );
+
+  const departments = {};
+  const failed = [];
+  const successfulReports = [];
+
+  settled.forEach((item, index) => {
+    const key = keys[index];
+    const agent = AGENTS[key];
+
+    if (item.status === "fulfilled") {
+      departments[key] = {
+        name: agent.name,
+        status: "اقتراح يحتاج إلى مراجعة",
+        analysis: item.value,
+        note: "تحليل مولّد آلياً وليس إثباتاً لحالة الشركة."
+      };
+      successfulReports.push(`[${agent.name}]\n${item.value}`);
+    } else {
+      console.error(`Agent ${key} failed:`, item.reason);
+      failed.push(key);
+      departments[key] = {
+        name: agent.name,
+        status: "لم يكتمل",
+        analysis: "تعذر إنتاج تقرير هذا الوكيل. أعد المحاولة.",
+        note: ""
+      };
+    }
+  });
+
+  // إذا فشل الجميع فالسبب غالباً الحصة أو توفر الخدمة.
+  if (successfulReports.length === 0) {
+    throw new Error("فشل جميع الوكلاء.");
+  }
+
+  // المدير يلخص تقارير الوكلاء الناجحين في استدعاء خامس.
+  let ceo;
+  try {
+    ceo = await runModel(
+      env,
+      ceoSystemPrompt(),
+      `${userMessage}\n\nتقارير الوكلاء:\n${successfulReports.join("\n\n")}`,
+      CEO_MAX_TOKENS
+    );
+  } catch (error) {
+    console.error("CEO synthesis failed:", error);
+    ceo = "تعذر إنتاج تقرير المدير. تقارير الوكلاء متاحة أدناه.";
+    failed.push("CEO");
+  }
+
+  return {
+    status: failed.length ? "partial" : "completed",
+    mode: "analysis",
+    warning:
+      "هذا التقرير يتضمن تحليلات واقتراحات مولّدة آلياً. يجب التحقق منها قبل اعتماد القرارات.",
+    ceo,
+    departments,
+    failed,
+    input_received: { task, context_provided: Boolean(context) }
+  };
+}
+
+export default {
+  async fetch(request, env) {
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: CORS_HEADERS });
+    }
+
+    if (request.method !== "POST") {
+      return json({ status: "error", message: "استعمل POST لإرسال المهمة." }, 405);
+    }
+
+    const origin = request.headers.get("Origin");
+    if (origin && origin !== ALLOWED_ORIGIN) {
+      return json({ status: "error", message: "هذا المصدر غير مسموح له بالاتصال." }, 403);
+    }
+
+    if (!env.API_SECRET) {
+      return json({ status: "error", message: "إعداد المصادقة غير مكتمل على الخادم." }, 500);
+    }
+
+    const authorization = request.headers.get("Authorization");
+    if (authorization !== `Bearer ${env.API_SECRET}`) {
+      return json({ status: "error", message: "غير مصرح بالوصول." }, 401);
+    }
+
+    if (!env.AI || typeof env.AI.run !== "function") {
+      return json({ status: "error", message: "خدمة الذكاء الاصطناعي غير متاحة حالياً." }, 503);
+    }
+
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return json({ status: "error", message: "صيغة البيانات المرسلة غير صالحة." }, 400);
+    }
+
+    const task = cleanText(body?.task, 8000);
+    const context = cleanText(body?.context, 4000);
+
+    if (!task) {
+      return json({ status: "error", message: "خاصك تدخل المهمة المطلوبة." }, 400);
+    }
+
+    try {
+      return json(await buildReport(env, task, context));
+    } catch (error) {
+      // التفاصيل في سجلات Cloudflare فقط. لا فاتورة ولا تحويل لخدمة مدفوعة.
+      console.error("AI ENTERPRISE Worker error:", error);
+
+      return json({
+        status: "error",
+        message:
+          "تعذر إنشاء التقرير. غالباً نفدت الحصة المجانية لليوم (تتجدد 00:00 UTC) أو الخدمة غير متاحة. حاول لاحقاً.",
+        retryable: true
+      }, 503);
+    }
+  }
+};
