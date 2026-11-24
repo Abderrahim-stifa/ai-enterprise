@@ -1,9 +1,32 @@
+// مقارنة نصين بزمن ثابت لتجنب تسريب معلومات عبر زمن الاستجابة.
+function safeEqual(a, b) {
+  const enc = new TextEncoder();
+  const x = enc.encode(String(a));
+  const y = enc.encode(String(b));
+  let diff = x.length ^ y.length;
+  const len = Math.max(x.length, y.length);
+  for (let i = 0; i < len; i++) {
+    diff |= (x[i] || 0) ^ (y[i] || 0);
+  }
+  return diff === 0;
+}
+
 
 export async function onRequestPost({ request, env }) {
   if (!env.API_SECRET) {
     return Response.json(
       { error: "Server configuration missing" },
       { status: 503 }
+    );
+  }
+
+  // رمز الدخول (هو نفسه API_SECRET). بدونه لا يُرسل أي طلب إلى Worker.
+  const code = request.headers.get("X-Access-Code") || "";
+
+  if (!safeEqual(code, env.API_SECRET)) {
+    return Response.json(
+      { status: "error", message: "رمز الدخول غير صحيح." },
+      { status: 401, headers: { "Cache-Control": "no-store" } }
     );
   }
 

@@ -843,6 +843,34 @@ function renderCEOReport(data){
   $("answer").innerHTML=html;
 }
 
+/* رمز الدخول: يُحفظ في التبويب الحالي فقط ويُحذف عند إغلاقه */
+function getAccessCode(forcePrompt){
+  let code="";
+  try{ code=sessionStorage.getItem("ai_access_code")||""; }catch(e){}
+  if(code&&!forcePrompt)return code;
+
+  code=(window.prompt(forcePrompt?"الرمز غير صحيح. أدخل رمز الدخول:":"أدخل رمز الدخول:")||"").trim();
+  if(code){
+    try{ sessionStorage.setItem("ai_access_code",code); }catch(e){}
+  }
+  return code;
+}
+
+function clearAccessCode(){
+  try{ sessionStorage.removeItem("ai_access_code"); }catch(e){}
+}
+
+function sendCEO(code,task,context){
+  return fetch("/api/ceo",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "X-Access-Code":code
+    },
+    body:JSON.stringify({task,context})
+  });
+}
+
 /* الاتصال بالمدير التنفيذي */
 async function runCEO(){
   const task=$("ceoTask").value.trim();
@@ -857,11 +885,26 @@ async function runCEO(){
   $("answer").innerHTML='<div class="empty">جاري إعداد التقرير، المرجو الانتظار...</div>';
 
   try{
-    const response=await fetch("/api/ceo",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({task,context})
-    });
+    let code=getAccessCode(false);
+    if(!code){
+      $("ceoStatus").textContent="";
+      $("answer").innerHTML='<div class="empty">لم يتم إدخال رمز الدخول.</div>';
+      return;
+    }
+
+    let response=await sendCEO(code,task,context);
+
+    if(response.status===401){
+      // الرمز خاطئ: نمسحه ونطلبه مرة واحدة فقط.
+      clearAccessCode();
+      code=getAccessCode(true);
+      if(!code){
+        $("ceoStatus").textContent="";
+        $("answer").innerHTML='<div class="empty">لم يتم إدخال رمز الدخول.</div>';
+        return;
+      }
+      response=await sendCEO(code,task,context);
+    }
 
     const raw=await response.text();
     let data;
