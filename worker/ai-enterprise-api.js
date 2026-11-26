@@ -106,7 +106,8 @@ async function callModel(env, model, system, user, maxTokens) {
       { role: "user", content: user }
     ],
     max_tokens: maxTokens,
-    temperature: TEMPERATURE
+    temperature: TEMPERATURE,
+    ...(model === FALLBACK_MODEL ? { repetition_penalty: 1.3 } : {})
   });
 
   const text = extractText(result);
@@ -139,24 +140,27 @@ function agentSystemPrompt(key) {
 معطيات الشركة:
 ${COMPANY_DATA}
 ${COMMON_RULES}
-الشكل المطلوب (نص عادي):
-الخلاصة: جملتان.
-التوصيات: ثلاث توصيات مرقمة، كل واحدة قابلة للتنفيذ وتخص تخصصك فقط.
-المعلومات الناقصة: حتى ثلاثة أسئلة محددة يجب أن يجيب عنها صاحب المشروع.`;
+اكتب ثلاثة أقسام بهذه العناوين، وتحت كل عنوان محتوى فعلي مختلف عن غيره:
+الخلاصة: جملتان عن الأولوية في تخصصك.
+التوصيات: ثلاث توصيات مرقمة، كل واحدة فعل ملموس مختلف تماماً عن الأخرى وتخص تخصصك فقط (لا تذكر مواضيع الأقسام الأخرى).
+أسئلة لصاحب المشروع: حتى سؤالين محددين.
+لا تكرر أي جملة أو فكرة.`;
 }
 
 function ceoSystemPrompt() {
-  return `أنت المدير التنفيذي لشركة AI ENTERPRISE. تقرأ تقارير الوكلاء وتتخذ قراراً واحداً واضحاً للأسبوع القادم.
+  return `أنت المدير التنفيذي لشركة AI ENTERPRISE. اقرأ تقارير الوكلاء ثم اكتب تقريراً قصيراً خاصاً بك، بمحتوى حقيقي مبني على طلب صاحب المشروع.
 
 معطيات الشركة:
 ${COMPANY_DATA}
 ${COMMON_RULES}
-الشكل المطلوب (نص عادي):
-الوضع: ما هو مؤكد، وما هو افتراض.
-القرار: أهم أولوية واحدة هذا الأسبوع، ولماذا.
-خطة 7 أيام: خمس خطوات قصيرة مرتبة.
-قرارات تحتاج صاحب المشروع: حتى ثلاثة أسئلة محددة.
-لا تكرر ما كتبه الوكلاء حرفياً.`;
+اكتب أربعة أقسام بهذه العناوين فقط، وتحت كل عنوان محتوى فعلي (لا تعد كتابة وصف العنوان):
+1) الوضع الحالي
+2) القرار الأهم هذا الأسبوع
+3) خطة 7 أيام
+4) أسئلة لصاحب المشروع
+
+في "خطة 7 أيام" اكتب خمس خطوات فعلية قصيرة، كل خطوة جملة واحدة تبدأ بفعل.
+لا تنسخ جمل الوكلاء. لا تكرر أي جملة.`;
 }
 
 async function buildReport(env, task, context, info) {
@@ -228,6 +232,7 @@ async function buildReport(env, task, context, info) {
     departments,
     failed,
     model: info.fallback ? `${FALLBACK_MODEL} (احتياطي)` : MODEL,
+    used_model: info.fallback ? FALLBACK_MODEL : MODEL,
     diagnostics: info.errors.length ? [...new Set(info.errors)].slice(0, 3) : undefined,
     input_received: { task, context_provided: Boolean(context) }
   };
