@@ -752,6 +752,10 @@ function renderCEOReport(data){
     html+=`<div class="report-warning">${escapeHTML(data.warning)}</div>`;
   }
 
+  if(data.used_model||data.model){
+    html+=`<div class="report-warning">النموذج المستعمل: ${escapeHTML(String(data.used_model||data.model))}`+(Array.isArray(data.diagnostics)&&data.diagnostics.length?` | سبب الاحتياطي: ${escapeHTML(data.diagnostics.join(" ; "))}`:"")+`</div>`;
+  }
+
   if(typeof ceo==="string"){
     html+=`<div class="report-block"><h3>تقرير المدير التنفيذي</h3><p>${escapeHTML(ceo)}</p></div>`;
   }else{
