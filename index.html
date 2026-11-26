@@ -916,7 +916,10 @@ async function runCEO(){
     }
 
     if(!response.ok){
-      throw new Error(data.message||data.error||"فشل الاتصال بالخادم.");
+      const details=Array.isArray(data.diagnostics)&&data.diagnostics.length
+        ?" | تفاصيل تقنية: "+data.diagnostics.join(" ; ")
+        :"";
+      throw new Error((data.message||data.error||"فشل الاتصال بالخادم.")+details);
     }
 
     if(data.status==="error"){
